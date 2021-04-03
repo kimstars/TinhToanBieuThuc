@@ -4,6 +4,19 @@
 
 using namespace std;
 
+bool checkBieuThuc(string s){
+    int length = s.size();
+    int res = 0;
+    for(int i = 0 ; i < length; i++){
+        if(s[i] == ')') res--;
+        if(s[i] == '(') res++;
+    }
+    if(res){
+        return 0;
+    }else{
+        return 1;
+    }
+}
 
 bool LaSo(char c)
 {
@@ -92,9 +105,12 @@ double CalculatorPostFix(string s){
 
 int main(){
     string s;
+    do{
+        cout << "nhap bieu thuc bo may tinh cho  == : " << endl;
+        cin >> s;
+        if(!checkBieuThuc(s)) cout << "bieu thuc sai, hay kiem tra lai" << endl;
+    }while(!checkBieuThuc(s));
 
-    cout << "nhap bieu thuc bo may tinh cho  == : " << endl;
-    cin >> s;
     string res = PostFix(s);
     cout << CalculatorPostFix(res);
     return 0;
