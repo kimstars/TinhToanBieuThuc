@@ -33,22 +33,20 @@ bool checkBieuThuc(char* s){
         return 1;
     }
 }
-// FLOAT STACK DEFINITE
 
-//CHAR STACK BEGIN
 
 struct Stack {
 	int top;
-	unsigned capacity;
-	char* array;
+	int capacity;
+	int* array;
 };
 
-struct Stack* createStack(unsigned capacity)
+struct Stack* createStack(int capacity)
 {
 	struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
 	stack->capacity = capacity;
 	stack->top = -1;
-	stack->array = (char*)malloc(stack->capacity * sizeof(char));
+	stack->array = (int*)malloc(capacity * sizeof(int));
 	return stack;
 }
 
@@ -62,19 +60,16 @@ int isEmpty(struct Stack* stack)
 	return stack->top == -1;
 }
 
-void push(struct Stack* stack, char item)
+void push(struct Stack* stack, int item)
 {
-	if (isFull(stack))
-		return;
 	stack->array[++stack->top] = item;
-
 }
 
 char pop(struct Stack* stack)
 {
-	if (isEmpty(stack))
-		return;
-	return stack->array[stack->top--];
+    if (!isEmpty(stack))
+        return stack->array[stack->top--] ;
+    return 0;
 }
 char top(struct Stack* stack){
 	if (isEmpty(stack)){
@@ -82,88 +77,64 @@ char top(struct Stack* stack){
 	}
 	return stack->array[stack->top];
 }
-void append(char* s, char c) { // ----------------------------------------------------
-    int len = strlen(s);
-    s[len] = c;
-    s[len+1] = '\0';
-}
 
-//END CHAR STACK
-
-
-char* PostFix(char *s){
-    int len = strlen(s);
-    char *res = (char*)calloc(len,sizeof(char));
-    struct Stack* k = createStack(len);
-    int i = 0;
-    for (i = 0; i < len; i++){
+char* PostFix(char* s){   
+    struct Stack * k = createStack(strlen(s));
+	char *res = (char*)calloc(strlen(s)*2,sizeof(char));
+    int i,j;
+    for (i = 0, j = -1; s[i] ; ++i){
         if(LaSo(s[i])){
-            while(LaSo(s[i])){
-                append(res,s[i]);
-                ++i;
-            }
-			append(res,' ');
+			while(LaSo(s[i])){
+				res[++j] = s[i++];
+			}
+			res[++j] = 32;
         }
-		if (s[i] == '(') push(k, s[i]);
+		if (s[i] == '(') {
+			push(k, s[i]);
+		}
 		if (s[i] == ')'){
 			while(top(k) != '('){
-				append(res, pop(k));
+				res[++j] = pop(k);
+				res[++j] = 32;
 			}
-			k->top--;
+			--k->top;
 		}
 		if (LaTT(s[i])){
-			while(!isEmpty(k) && uutien(s[i]) <= uutien(top(k))){
-				append(res,pop(k));
+			while(!isEmpty(k) && 
+					uutien(s[i]) <= uutien(top(k))){
+				res[++j] = 32;
+				res[++j] = pop(k);
 			}
 			push(k,s[i]);
 		}
     }
 	while(!isEmpty(k)){
-		append(res,' ');
-		append(res, pop(k));
-
+		res[++j] = 32;
+		res[++j] = pop(k);
 	}
 	printf("post fix : %s\n", res);
 	return res;
 }
-void cat(char a[], char a1[]){
-	int i, j, n1, n2;
-	n1 = strlen(a);
-	n2 = strlen(a1);
-	j = 0;
-	for(i = n1 ; i < n1+n2; i++){
-		a[i] = a1[j++];
-	}
-	a[i] = '\0';
-}
 
-char* toString(int a){
-	char str[20];    //create an empty string to store number
-	sprintf(str, "%d", a); 
-	return str;
-}
 
-float CalculatorPostFix(char s[]){
-	int len = strlen(s);
-	struct Stack * k = createStack(len); // luu so
-	float x = 0, a = 0,b = 0,c = 0;
+int CalculatorPostFix(char *s){
+	struct Stack* k = createStack(strlen(s)); // luu so
+	int x= 0, a = 0,b = 0,c = 0;
 	int i;
-	for (i = 0;i < len; i++){
+	for (i = 0;s[i]; ++i){
 		if(LaSo(s[i])){
 			while(LaSo(s[i])){
 				x = x*10 + s[i++] - '0';
 			}
 			push(k,x);
 			x = 0;
-		}
-		if(LaTT(s[i])){
+		}else if(!isEmpty(k) && LaTT(s[i])){
 			a = pop(k);
 			b = pop(k);
 			if(s[i] == '-') c = b - a;
             if(s[i] == '+') c = b + a;
             if(s[i] == '*') c = b * a;
             if(s[i] == '/' && a != 0) c = b / a;
-//            if(s[i] == '%' && a != 0) c = (b) % (a);
             if(s[i] == '^') c = pow(b,a);
 			push(k,c);
 		}
@@ -171,25 +142,21 @@ float CalculatorPostFix(char s[]){
 	return pop(k);
 }
 
-void itos(int value, char* str) {
-    sprintf(str, "%d", value);
-}
-int main(){
-	// char s[1000];
-	// do{
-	// 	printf("Nhap bieu thuc :\n");
-	// 	gets(s);
-    //     if(!checkBieuThuc(s)){
-	// 		printf("\nVui long nhap lai bieu thuc dung\n");
-	// 	}
-    // }while(!checkBieuThuc(s));
-	// char * res = PostFix(s);
-	// float res1 = CalculatorPostFix(res);
-	// // printf("\npost fix %s", res);
-	// printf("\nket qua la %.1f", res1);
 
-	int a = 10;
-	char str[10];
-	itos(a,str);
-	printf("%s", str);
+int main(){
+	char s[1000] ;
+	do{
+		printf("Nhap bieu thuc :\n");
+		gets(s);
+        if(!checkBieuThuc(s)){
+			printf("\nVui long nhap lai bieu thuc dung\n");
+		}
+    }while(!checkBieuThuc(s));
+	char * res = PostFix(s);
+	// char * res = "3 3 +";
+	int res1 = CalculatorPostFix(res);
+	// printf("\npost fix %s", res);
+	printf("\nket qua la %d", res1);
+
+	
 }
