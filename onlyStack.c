@@ -77,6 +77,12 @@ char top(struct Stack* stack){
 	}
 	return stack->array[stack->top];
 }
+int popInt(struct Stack* stack)
+{
+    if (!isEmpty(stack))
+        return stack->array[stack->top--] ;
+    return 0;
+}
 
 char* PostFix(char* s){   
     struct Stack * k = createStack(strlen(s));
@@ -128,9 +134,10 @@ int CalculatorPostFix(char *s){
 			}
 			push(k,x);
 			x = 0;
-		}else if(!isEmpty(k) && LaTT(s[i])){
-			a = pop(k);
-			b = pop(k);
+		}
+		if(!isEmpty(k) && LaTT(s[i])){
+			a = popInt(k);
+			b = popInt(k);
 			if(s[i] == '-') c = b - a;
             if(s[i] == '+') c = b + a;
             if(s[i] == '*') c = b * a;
@@ -139,7 +146,7 @@ int CalculatorPostFix(char *s){
 			push(k,c);
 		}
 	}
-	return pop(k);
+	return popInt(k);
 }
 
 

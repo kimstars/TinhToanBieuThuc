@@ -142,7 +142,7 @@ char* PostFix(char *s){
     int len = strlen(s);
     char *res = (char*)calloc(len,sizeof(char));
     struct Stack* k = createStack(len);
-    int i = 0;
+    int i;
     for (i = 0; i < len; i++){
         if(LaSo(s[i])){
             while(LaSo(s[i])){
