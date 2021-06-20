@@ -7,7 +7,7 @@ typedef struct tree {
     struct tree * right;
 }* node;
 
-node stack[30];
+node stack[30]; // stack lưu node 
 
 int top = -1;
 
@@ -56,22 +56,23 @@ int isOperator(char c){
         c == '^') return 1;
     return 0;
 }
+
 void main() {
-    char a[20];
+    char postfix[20];
     node temp, t;
     int i;
     printf("Enter the postfix expression\n");
-    gets(a);
-    for (i = 0; a[i] != NULL; i++){
-        if (isOperator(a[i])) {
-                temp = newNode(a[i]);
-
+    gets(postfix);
+    for (i = 0; postfix[i] != NULL; i++){
+        if (isOperator(postfix[i])) { // gặp toán tử 
+                temp = newNode(postfix[i]); //node là toán tử, leaf là toán hạng
+                // lấy hai phần tử đỉnh stack cho vào hai nhánh cây nhị phân
                 temp -> right = pop();
                 temp -> left = pop();
-
+                // đẩy node trở lại stack
                 push(temp);
             } else {
-                temp = newNode(a[i]);
+                temp = newNode(postfix[i]);
                 push(temp);
             }
     }
